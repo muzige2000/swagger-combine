@@ -77,6 +77,7 @@ class SwaggerCombine {
       .then(() => this.addBasePath())
       .then(() => this.combineSchemas())
       .then(() => this.allOfFields())
+      .then(() => this.generateOperationIds())
       .then(() => this.removeEmptyFields())
   }
 
@@ -539,7 +540,17 @@ class SwaggerCombine {
 
 
   allOfFields() {
-    // this.combinedSchema = fixForGoSwagger(this.combinedSchema, 1)
+    this.combinedSchema = fixForGoSwagger(this.combinedSchema, 1)
+    return this
+  }
+
+  generateOperationIds() {
+    this.combinedSchema.paths = _.mapValues(this.combinedSchema.paths, (obj, path) => {
+      if (obj.get !== undefined) {
+        obj.get['operationId'] = `get ${path}`
+      }
+      return obj
+    })
     return this
   }
 
